@@ -3,6 +3,12 @@
 Kerbitat is a profiling tool for pridicting running time of a DNN model on NVIDIA GPUs.
 It can predict the performance of the target GPU from the profiling result of the source GPU.
 
+
+# Install
+```
+pip install kerbitat==0.0.1
+```
+
 # How it works
 
 1. Kerbitat use KernelProfiler from habitat to get mangled kernel names of running DNN model.
