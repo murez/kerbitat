@@ -12,7 +12,7 @@ from habitat.profiling.kernel import KernelProfiler
 from habitat.analysis import Device
 import numpy as np
 import torch
-
+import os
 
 class GPU_TYPE(IntEnum):
     """
@@ -28,6 +28,32 @@ class GPU_TYPE(IntEnum):
     TITAN_X = 6
     M40 = 7
 
+import torch.nn as nn
+import numpy
+import torch.nn.functional as F
+
+class Net(nn.Module):
+    def __init__(self, in_feature):
+        super(Net, self).__init__()
+        self.in_feature = in_feature
+        self.fc1 = nn.Linear(self.in_feature, 256)
+        self.fc2 = nn.Linear(256, 128)
+        self.batchnormalize1 = nn.BatchNorm1d(128, affine=False)
+        self.fc_feature = nn.Linear(128, 64)
+        self.batchnormalize2 = nn.BatchNorm1d(64, affine=False)
+        self.fc_1 = nn.Linear(64, 64)
+        self.fc_2 = nn.Linear(64, 8)
+
+    def forward(self, x):
+        x = F.mish(self.fc1(x))
+        x = F.mish(self.fc2(x))
+        x = self.batchnormalize1(x)
+        feature = F.mish(self.fc_feature(x))
+        feature = self.batchnormalize2(feature)
+        x = F.mish(self.fc_1(feature) + feature)
+        x = self.fc_2(x)
+        return x, feature
+    
 
 class Kerbitat:
     """
@@ -46,10 +72,14 @@ class Kerbitat:
         test_device: GPU_TYPE
             The GPU type of the profing device.
         """
+        localtion = os.path.dirname(os.path.abspath(__file__))
+        kernel_to_id_file_path = os.path.join(localtion, "data/kernel_to_id.pkl")
+        predictor_file_path = os.path.join(localtion, "data/predictor.pt")
         self.profiler = KernelProfiler(device=Device.A40)
         self.all_kernel_to_id = pickle.load(
-            open("./data/kernel_to_id.pkl", "rb"))
-        self.predictor = torch.load("./data/predictor.pt")
+            open(kernel_to_id_file_path, "rb"))
+        self.predictor = Net(len(self.all_kernel_to_id))
+        self.predictor.load_state_dict(torch.load(predictor_file_path))
         self.measured_kernel = []
         self.predict_result = np.array(
             len(GPU_TYPE) * [0.0]).astype(np.float32)
