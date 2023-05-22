@@ -48,3 +48,5 @@ DeepView.Predict (aka Habitat) began as a research project in the EcoSystem Grou
   year = {2021},
 }
 ```
+
+Kerbitat is part of Siyuan Zhang's undergraduate thesis at ShanghaiTech University.
