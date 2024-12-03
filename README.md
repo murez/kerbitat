@@ -6,7 +6,7 @@ It can predict the performance of the target GPU from the profiling result of th
 
 # Install
 ``` bash
-pip install kerbitat
+pip install ./
 ```
 
 # How it works
