@@ -9,7 +9,7 @@ except ImportError:
 __description__ = 'Cross-GPU performance predictions for DNN.'
 
 __author__ = 'murez'
-__email__ = 'zhangsy3@shanghaitech.edu.cn'
+__email__ = 'zhang.15333@osu.edu'
 
 __license__ = 'Apache-2.0'
 
